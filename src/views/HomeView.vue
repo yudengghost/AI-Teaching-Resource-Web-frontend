@@ -14,60 +14,48 @@
             </a-menu-item>
     
             <a-sub-menu key="1">
-              <template #icon><icon-book /></template>
-              <template #title>个人中心</template>
+              <template #icon><icon-thumb-up /></template>
+              <template #title>PPT管理</template>
               <a-menu-item key="1_0">
                 <icon-list />
-                修改个人信息
+                历史记录
               </a-menu-item>
               <a-menu-item key="1_1">
                 <icon-cloud />
-                我的资源
+                模板查询
               </a-menu-item>
-            </a-sub-menu>
-    
-            <a-sub-menu key="2">
-              <template #icon><icon-thumb-up /></template>
-              <template #title>PPT生成</template>
-              <a-menu-item key="2_0">
-                <icon-list />
-                大纲生成
-              </a-menu-item>
-              <a-menu-item key="2_1">
-                <icon-cloud />
+              <a-menu-item key="1_2">
+                <icon-thumb-up />
                 一键生成PPT
               </a-menu-item>
             </a-sub-menu>
-    
-            <a-sub-menu key="3">
-              <template #icon><icon-book /></template>
-              <template #title>PPT管理</template>
-              <a-menu-item key="3_0">
-                <icon-question />
-                历史记录
-              </a-menu-item>
-              <a-menu-item key="3_1">
-                <icon-thumb-up />
-                模板查询
-              </a-menu-item>
-            </a-sub-menu>
 
-            <a-sub-menu key="4">
+            <a-sub-menu key="2">
               <template #icon><icon-book /></template>
               <template #title>题目管理</template>
-              <a-menu-item key="4_0">
+              <a-menu-item key="2_0">
                 <icon-question />
                 题目生成
               </a-menu-item>
-              <a-menu-item key="4_1">
+              <a-menu-item key="2_1">
                 <icon-thumb-up />
                 题目管理
               </a-menu-item>
-              <a-menu-item key="4_2">
+              <a-menu-item key="2_2">
                 <icon-thumb-up />
                 试卷组织
               </a-menu-item>
             </a-sub-menu>
+
+            <a-menu-item key="3_0">
+              <icon-thumb-up />
+              AI助手
+            </a-menu-item>
+
+            <a-menu-item key="4_0">
+              <icon-list />
+                修改个人信息
+            </a-menu-item>
     
           </a-menu>
     
@@ -101,7 +89,7 @@
             <a-layout-content>
               
               
-                <component :is="currentComponent" />
+                <component :is="currentComponent" @navigate="handleMenuClick"/>
               
             </a-layout-content>
             <div class="footer">
@@ -165,6 +153,7 @@ const Questions = defineAsyncComponent(() => import('./Questions.vue'));
 const QuestionManage = defineAsyncComponent(() => import('./QuestionManage.vue'));
 const ExamOrganization = defineAsyncComponent(() => import('./ExamOrganization.vue'));
 const Login = defineAsyncComponent(() => import('./Login.vue'));
+const AIChat = defineAsyncComponent(() => import('./AIChat.vue'));
 
 const isCollapsed = ref();
 const currentComponent = ref();
@@ -215,78 +204,8 @@ const handleMenuClick = (key: string) => {
       currentComponent.value = markRaw(Main);
       break;
 
+
     case '1_0':
-      routes.value = [
-        {
-          path: '/',
-          label: '首页'
-        },
-        {
-          path: '/',
-          label: '个人中心'
-        },
-        {
-          path: '/',
-          label: '修改个人信息'
-        }
-      ]
-      currentComponent.value = markRaw(UserInfo);
-      break;
-    case '1_1':
-      routes.value = [
-        {
-          path: '/',
-          label: '首页'
-        },
-        {
-          path: '/',
-          label: '个人中心'
-        },
-        {
-          path: '/',
-          label: '我的资源'
-        }
-      ]
-      currentComponent.value = markRaw(Main);
-      break;
-
-    case '2_0':
-      routes.value = [
-        {
-          path: '/',
-          label: '首页'
-        },
-        {
-          path: '/',
-          label: 'PPT生成'
-        },
-        {
-          path: '/',
-          label: '大纲生成'
-        },
-      ]
-      currentComponent.value = markRaw(Main);
-      break;
-
-    case '2_1':
-      routes.value = [
-        {
-          path: '/',
-          label: '首页'
-        },
-        {
-          path: '/',
-          label: 'PPT生成'
-        },
-        {
-          path: '/',
-          label: '一键生成PPT'
-        },
-      ]
-      currentComponent.value = markRaw(PptGenerator);
-      break;
-
-    case '3_0':
       routes.value = [
         {
           path: '/',
@@ -304,7 +223,7 @@ const handleMenuClick = (key: string) => {
       currentComponent.value = markRaw(History);
       break;
 
-    case '3_1':
+    case '1_1':
       routes.value = [
         {
           path: '/',
@@ -322,7 +241,25 @@ const handleMenuClick = (key: string) => {
       currentComponent.value = markRaw(Themes);
       break;
 
-    case '4_0':
+    case '1_2':
+      routes.value = [
+        {
+          path: '/',
+          label: '首页'
+        },
+        {
+          path: '/',
+          label: 'PPT管理'
+        },
+        {
+          path: '/',
+          label: '一键生成PPT'
+        },
+      ]
+      currentComponent.value = markRaw(PptGenerator);
+      break;
+
+    case '2_0':
       routes.value = [
         {
           path: '/',
@@ -335,12 +272,12 @@ const handleMenuClick = (key: string) => {
         {
           path: '/',
           label: '题目生成'
-        }
+        },
       ]
       currentComponent.value = markRaw(Questions);
       break;
 
-      case '4_1':
+    case '2_1':
       routes.value = [
         {
           path: '/',
@@ -358,8 +295,7 @@ const handleMenuClick = (key: string) => {
       currentComponent.value = markRaw(QuestionManage);
       break;
 
-    case '4_2':
-
+      case '2_2':
       routes.value = [
         {
           path: '/',
@@ -375,6 +311,26 @@ const handleMenuClick = (key: string) => {
         }
       ]
       currentComponent.value = markRaw(ExamOrganization);
+      break;
+
+      case '3_0':
+        routes.value = [
+          {
+            path: '/',
+            label: 'AI助手'
+          }
+        ]
+        currentComponent.value = markRaw(AIChat);
+        break;
+
+      case '4_0':
+      routes.value = [
+        {
+          path: '/',
+          label: '个人中心'
+        }
+      ]
+      currentComponent.value = markRaw(UserInfo);
       break;
 
     default:

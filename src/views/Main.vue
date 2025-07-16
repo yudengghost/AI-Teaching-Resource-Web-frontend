@@ -15,27 +15,37 @@
       </section>
 
       <section class="features-section">
-        <h2>核心功能</h2>
+        <h2>功能导航</h2>
         <div class="features-grid">
-          <div class="feature-card">
+          <div class="feature-card" @click="$emit('navigate', '2_1')">
             <div class="feature-icon">📊</div>
-            <h3>智能PPT生成</h3>
+            <h3>一键生成PPT</h3>
             <p>根据教学内容自动生成结构清晰、内容丰富的PPT，支持多种学科和教学风格</p>
           </div>
-          <div class="feature-card">
+          <div class="feature-card" @click="$emit('navigate', '3_0')">
             <div class="feature-icon">🗂️</div>
-            <h3>资源管理</h3>
-            <p>便捷管理所有生成的教学资源，支持分类、标签、搜索和批量操作</p>
+            <h3>历史记录</h3>
+            <p>查看和管理所有生成的教学资源，支持分类、标签和搜索</p>
           </div>
-          <div class="feature-card">
-            <div class="feature-icon">🔄</div>
-            <h3>一键修改</h3>
-            <p>智能识别教学需求，快速调整PPT内容、布局和风格，满足个性化教学需求</p>
+          <div class="feature-card" @click="$emit('navigate', '3_1')">
+            <div class="feature-icon">🎨</div>
+            <h3>模板查询</h3>
+            <p>浏览各种PPT模板，选择适合自己教学风格的模板</p>
           </div>
-          <div class="feature-card">
-            <div class="feature-icon">👥</div>
-            <h3>协作共享</h3>
-            <p>支持教师间资源共享与协作，建立教学资源共享生态</p>
+          <div class="feature-card" @click="$emit('navigate', '4_0')">
+            <div class="feature-icon">❓</div>
+            <h3>题目生成</h3>
+            <p>智能生成各类题目，满足不同教学场景的测试需求</p>
+          </div>
+          <div class="feature-card" @click="$emit('navigate', '4_1')">
+            <div class="feature-icon">📝</div>
+            <h3>题目管理</h3>
+            <p>集中管理已生成的各类题目，便于后续使用和修改</p>
+          </div>
+          <div class="feature-card" @click="$emit('navigate', '4_2')">
+            <div class="feature-icon">📑</div>
+            <h3>试卷组织</h3>
+            <p>根据题目库快速组织试卷，提高教学效率</p>
           </div>
         </div>
       </section>
@@ -49,13 +59,13 @@
           <li><strong>持续更新</strong>：AI模型不断学习进步，生成质量持续提升</li>
         </ul>
       </section>
-
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-
+// 定义emit事件
+defineEmits(['navigate']);
 </script>
 
 <style scoped>
@@ -72,11 +82,6 @@
   margin-bottom: 40px;
   padding-bottom: 20px;
   border-bottom: 1px solid #eaeaea;
-}
-
-.logo {
-  height: 60px;
-  margin-right: 20px;
 }
 
 .title {
@@ -122,11 +127,13 @@ h2 {
   padding: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
 }
 
 .feature-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-fill-2);
 }
 
 .feature-icon {
@@ -165,29 +172,4 @@ h2 {
   left: 0;
   top: 0;
 }
-
-.call-to-action {
-  background-color: #f0f7ff;
-  padding: 30px;
-  border-radius: 8px;
-  text-align: center;
-  margin: 40px 0;
-}
-
-.start-btn {
-  background-color: #3498db;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 15px;
-}
-
-.start-btn:hover {
-  background-color: #2980b9;
-}
-
 </style>
