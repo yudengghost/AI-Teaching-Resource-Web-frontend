@@ -17,32 +17,32 @@
       <section class="features-section">
         <h2>功能导航</h2>
         <div class="features-grid">
-          <div class="feature-card" @click="$emit('navigate', '2_1')">
+          <div class="feature-card" @click="$emit('navigate', '1_2')">
             <div class="feature-icon">📊</div>
             <h3>一键生成PPT</h3>
             <p>根据教学内容自动生成结构清晰、内容丰富的PPT，支持多种学科和教学风格</p>
           </div>
-          <div class="feature-card" @click="$emit('navigate', '3_0')">
+          <div class="feature-card" @click="$emit('navigate', '1_0')">
             <div class="feature-icon">🗂️</div>
             <h3>历史记录</h3>
             <p>查看和管理所有生成的教学资源，支持分类、标签和搜索</p>
           </div>
-          <div class="feature-card" @click="$emit('navigate', '3_1')">
+          <div class="feature-card" @click="$emit('navigate', '1_1')">
             <div class="feature-icon">🎨</div>
             <h3>模板查询</h3>
             <p>浏览各种PPT模板，选择适合自己教学风格的模板</p>
           </div>
-          <div class="feature-card" @click="$emit('navigate', '4_0')">
+          <div class="feature-card" @click="$emit('navigate', '2_0')">
             <div class="feature-icon">❓</div>
             <h3>题目生成</h3>
             <p>智能生成各类题目，满足不同教学场景的测试需求</p>
           </div>
-          <div class="feature-card" @click="$emit('navigate', '4_1')">
+          <div class="feature-card" @click="$emit('navigate', '2_1')">
             <div class="feature-icon">📝</div>
             <h3>题目管理</h3>
             <p>集中管理已生成的各类题目，便于后续使用和修改</p>
           </div>
-          <div class="feature-card" @click="$emit('navigate', '4_2')">
+          <div class="feature-card" @click="$emit('navigate', '2_2')">
             <div class="feature-icon">📑</div>
             <h3>试卷组织</h3>
             <p>根据题目库快速组织试卷，提高教学效率</p>

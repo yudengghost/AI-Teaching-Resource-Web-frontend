@@ -351,7 +351,8 @@ const toggleTheme = () => {
 
 // 设置2小时(7200000毫秒)的定时器,提前3分钟告诉用户token即将过期,每分钟检查一次
 const twoHoursInMs = 2 * 60 * 60 * 1000;
-setInterval(() => {
+const expireTimer = () => { 
+  return setInterval(() => {
     const leftTime = twoHoursInMs - (new Date().getTime() - new Date(localStorage.getItem('token_time') || '').getTime());
       if(leftTime < 3 * 60 * 1000){
         Message.info('token即将过期，请重新登录，即将跳转至登录页面');
@@ -364,7 +365,8 @@ setInterval(() => {
           router.push('/login');
         }, 3 * 1000);
       }
-}, 60 * 1000);
+  }, 60 * 1000);
+};
 
 // 在组件挂载时读取本地存储的主题设置和登录状态
 onMounted(() => {
@@ -377,6 +379,9 @@ onMounted(() => {
   
   // 检查用户是否已登录
   isLoggedIn.value = sessionStorage.getItem('isLogin') === 'true';
+  if(isLoggedIn.value){
+    expireTimer();
+  }
 });
 
     

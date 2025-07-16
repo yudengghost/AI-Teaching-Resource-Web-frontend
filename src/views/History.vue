@@ -269,9 +269,8 @@ onMounted(() => {
 <style scoped>
 .history-container {
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 32px;
-  min-height: 100vh;
+  margin: 20px auto;
+  padding: 0 16px;
 }
 
 .history-card {

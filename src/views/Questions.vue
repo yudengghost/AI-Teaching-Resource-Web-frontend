@@ -231,9 +231,9 @@ onMounted(() => {
 
 <style scoped>
 .questions-container {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 0 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
 }
 
 .question-card {

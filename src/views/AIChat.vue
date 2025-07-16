@@ -51,7 +51,7 @@
             placeholder="请输入您的问题..."
             :auto-size="{ minRows: 2, maxRows: 7 }"
             allow-clear
-            @keypress.ctrl.enter="sendMessage"
+            @keydown.ctrl.enter="sendMessage"
             class="input-area"
           />
           <a-button 
