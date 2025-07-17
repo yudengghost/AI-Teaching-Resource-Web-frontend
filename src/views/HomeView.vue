@@ -88,19 +88,15 @@
             <!--动态渲染-->
             <a-layout-content>
               
-              
+              <keep-alive>
                 <component :is="currentComponent" @navigate="handleMenuClick"/>
-              
+              </keep-alive>
             </a-layout-content>
             <div class="footer">
                 <div class="center">
                   <div>此网站仅供个人学习用途</div>
                   <div style="margin-left: 5px;margin-right: 5px;">|</div>
                   <div>不得以任何形式转发、宣传此网站相关内容</div> 
-                </div>
-                <div class="center" style="margin-top: 10px;">
-                  <div style="margin-right: 5px;">河海大学<strong>·</strong>计算机与软件学院</div>
-                  <div>{{ new Date().getFullYear() }}.{{ new Date().getMonth() + 1 }}</div>
                 </div>
             </div>
           </a-layout>
@@ -176,6 +172,7 @@ const handleLogout = () => {
   localStorage.removeItem('username');
   localStorage.removeItem('token');
   localStorage.removeItem('token_time');
+  localStorage.removeItem('id');
   isLoggedIn.value = false;
   Message.success('已成功退出登录');
   window.location.reload();

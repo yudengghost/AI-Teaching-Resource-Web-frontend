@@ -19,7 +19,8 @@
           total: page.total,
           showTotal: true,
           pageSize: page.size,
-          current: page.current
+          current: page.current,
+          onChange: onPageChange
         }"
         :bordered="false"
         row-key="id"
@@ -88,10 +89,10 @@ import * as marked from 'marked';
 // PPT信息类型定义
 interface PptInfo {
   id: string;
-  username: string;
   subject: string;
   coverUrl: string;
   templateId: string;
+  username: string;
   createTime: string;
   outline: string;
   category?: string | number | null;
@@ -112,6 +113,11 @@ const page = ref({
   size: '10',
   total: ''
 })
+
+const onPageChange = (p: number) => {
+  page.value.current = p.toString();
+  loadHistory();
+};
 
 // 过滤后的历史记录
 const filteredHistory = computed(() => {
@@ -156,7 +162,6 @@ const loadHistory = async () => {
     const result = await response.json();
     if(response.ok){
       console.log("获取历史记录成功"+result);
-      page.value.current = result.current;
       page.value.size = result.size;
       page.value.total = result.total;
       historyList.value = result.records;
@@ -230,6 +235,7 @@ const handleDownload = async (record: PptInfo) => {
     
     // 解析响应获取下载链接
     const result = await response.json();
+    console.log("下载PPT请求结果:", result);
     
     if (result.code !== 0 || !result.data || !result.data.fileUrl) {
       console.error('获取下载链接失败:', result.message);

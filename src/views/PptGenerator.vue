@@ -10,8 +10,36 @@
       
       <!-- 选项和主题输入表单 -->
       <a-form :model="formData" layout="vertical" class="input-form">
-        <a-form-item field="topic" label="PPT主题">
-          <a-input v-model="formData.topic" placeholder="请输入PPT主题" allow-clear />
+        <!-- 添加生成方式选择器 -->
+        <a-form-item field="generateType" label="生成方式">
+          <a-radio-group v-model="formData.generateType" type="button">
+            <a-radio value="text">文本生成</a-radio>
+            <a-radio value="file">文件生成</a-radio>
+          </a-radio-group>
+        </a-form-item>
+        
+        <!-- 根据生成方式显示不同的输入方式 -->
+        <a-form-item field="topic" label="PPT主题" v-if="formData.generateType === 'text'">
+          <a-textarea v-model="formData.topic" placeholder="请输入PPT主题或要求（1000字以内）" allow-clear :auto-size="{minRows: 10, maxRows: 30}" />
+        </a-form-item>
+        
+        <!-- 文件上传组件 -->
+        <a-form-item field="files" label="上传文件" v-if="formData.generateType === 'file'">
+          <a-upload
+            :file-list="fileList"
+            @change="handleFileChange"
+            :limit="1"
+            :accept="supportedFormats"
+            :auto-upload="false"
+          >
+            <template #upload-button>
+              <a-button type="outline">
+                <template #icon><icon-upload /></template>
+                上传文件
+              </a-button>
+              <p class="upload-tip">支持格式：doc/docx/pdf/ppt/pptx/txt/md/xls/xlsx/csv/html/epub/mobi/xmind/mm</p>
+            </template>
+          </a-upload>
         </a-form-item>
         
         <div v-if="usingTemplate" class="template-mode-tip">
@@ -64,7 +92,7 @@
       <div v-if="generating" class="progress-container">
         <a-progress :percent="generateProgress" :stroke-width="10" animation />
         <div class="progress-status">
-          <a-spin v-if="generateProgress < 100" />
+          <a-spin v-if="generateProgress < 1" />
           <icon-check-circle-fill v-else class="success-icon" />
           {{ progressStatus }}
         </div>
@@ -79,8 +107,20 @@
               <div class="stream-content">{{ streamContent }}</div>
             </div>
             <div v-else class="markdown-container">
-              <!-- 使用v-html渲染markdown内容 -->
-              <div class="markdown-content" v-html="renderMarkdown(streamContent)"></div>
+              <!-- 修改大纲的文本框 -->
+              <a-textarea class="markdown-content" v-model="streamContent" :auto-size="{minRows: 10, maxRows: 30}" />
+              
+              <!-- 添加明显的提示和确认按钮 -->
+              <div class="outline-action">
+                <div class="outline-tip">
+                  <a-alert type="info" show-icon>
+                    您可以修改上面的大纲内容，确认后将开始生成PPT
+                  </a-alert>
+                </div>
+                <a-button type="primary" size="large" @click="confirmOutlineAndGeneratePPT" :loading="generatingPPT">
+                  {{ generatingPPT ? '正在生成PPT...' : '确认大纲并生成PPT' }}
+                </a-button>
+              </div>
             </div>
           </div>
         </a-collapse-item>
@@ -117,7 +157,8 @@ import 'highlight.js/styles/github.css';
 import {
   IconDownload,
   IconCalendar,
-  IconCheckCircleFill
+  IconCheckCircleFill,
+  IconUpload
 } from '@arco-design/web-vue/es/icon';
 
 // 创建一个渲染markdown的函数
@@ -221,13 +262,30 @@ const progressStatus = ref<string>('');
 // 是否使用模板模式（禁用下拉框）
 const usingTemplate = ref<boolean>(false);
 
+const waitingForOutlineConfirmation = ref(false);
+
+// 添加新的状态变量
+const generatingPPT = ref<boolean>(false);
+let currentTaskId = '';
+
 // 表单数据
 const formData = reactive({
+  generateType: 'text', // 默认为文本生成
   topic: '', // 用户输入的PPT主题
   category: null,
   style: null,
   themeColor: null
 });
+
+// 文件列表
+const fileList = ref([]);
+const supportedFormats = ".doc,.docx,.pdf,.ppt,.pptx,.txt,.md,.xls,.xlsx,.csv,.html,.epub,.mobi,.xmind,.mm";
+
+// 处理文件变化
+const handleFileChange = (files: []) => {
+  fileList.value = files;
+  console.log('文件列表更新:', fileList.value);
+};
 
 // 大纲数据
 const streamContent = ref<string>('');
@@ -263,7 +321,6 @@ const getOptions = async () => {
       usingTemplate.value = true;
       console.log('从localStorage获取到模板ID:', localStorage.getItem('selectedTemplateId'));
       templateId = localStorage.getItem('selectedTemplateId') || '';
-      localStorage.removeItem('selectedTemplateId');
       return ;
     }
     try{
@@ -337,7 +394,9 @@ const getTheme = async () => {
             console.log('获取模板响应:', result);
             if(response.ok){
                 if(result.code == 0 && result.data && result.data.length > 0){
-                    templateId = result.data[0].id;
+                    // 随机取一个
+                    const randomIndex = Math.floor(Math.random() * result.data.length);
+                    templateId = result.data[randomIndex].id;
                     console.log('获取到模板ID:', templateId);
                     return true;
                 }
@@ -420,10 +479,33 @@ const getTemplateDetail = async (templateId: string) => {
 // 创建任务
 const createTask = async () => {
   try {
-    console.log('开始创建任务，主题:', formData.topic);
+    const isFileMode = formData.generateType === 'file';
+    console.log(`开始创建任务，模式: ${isFileMode ? '文件生成' : '文本生成'}`);
+    
     const form = new FormData();
-    form.append('type', "1");
-    form.append('content', formData.topic);
+    
+    if (isFileMode) {
+      // 文件生成模式
+      if (fileList.value.length === 0) {
+        throw new Error('请选择文件');
+      }
+      
+      form.append('type', "2");
+      // 不设置content
+      
+      // 添加文件
+      fileList.value.forEach((file: any) => {
+        form.append('file', file.file);
+      });
+    } else {
+      // 文本生成模式
+      if (!formData.topic) {
+        throw new Error('请输入PPT主题');
+      }
+      
+      form.append('type', "1");
+      form.append('content', formData.topic);
+    }
 
     const token = getToken();
     console.log('当前token状态:', token ? '已获取' : '未获取');
@@ -540,14 +622,14 @@ const generateContent = async (taskId: string) => {
               if (data.status === 3) {
                 // 流式文本
                 streamContent.value += data.text;
-                generateProgress.value = 50;
+                generateProgress.value = 0.5;
                 progressStatus.value = '正在生成大纲...';
               } else if (data.status === 4) {
                 // 最终结果
                 outlineResult.value = data.result;
                 markdown = streamContent.value; // 保存大纲内容
                 outlineLoading.value = false;
-                generateProgress.value = 75;
+                generateProgress.value = 0.75;
                 progressStatus.value = '大纲生成完成，准备生成PPT...';
                 console.log('大纲生成完成:', outlineResult.value);
                 return true;
@@ -569,7 +651,7 @@ const generateContent = async (taskId: string) => {
                     outlineResult.value = data.result;
                     markdown = streamContent.value;
                     outlineLoading.value = false;
-                    generateProgress.value = 75;
+                    generateProgress.value = 0.75;
                     progressStatus.value = '大纲生成完成，准备生成PPT...';
                     console.log('大纲生成完成:', outlineResult.value);
                     return true;
@@ -627,7 +709,7 @@ const generatePptx = async (taskId: string) => {
     if (result.code === 0) {
         pptInfo.value = result.data.pptInfo;
         pptGenerated.value = true;
-        generateProgress.value = 100;
+        generateProgress.value = 1;
         progressStatus.value = 'PPT生成完成！';
         console.log('PPT生成成功:', pptInfo.value);
         return true;
@@ -716,14 +798,25 @@ const formatDate = (dateStr: string) => {
   return date.toLocaleString().replace(/\//g, "-");
 };
 
+// 修改大纲
+const modifyOutline = () => {
+  markdown = streamContent.value;
+  Message.success('大纲已更新，请确认后生成PPT');
+}
+
 // 生成PPT流程
 const handleGenerate = async () => {
-  if (!formData.topic) {
+  const isFileMode = formData.generateType === 'file';
+  
+  if (isFileMode && fileList.value.length === 0) {
+    Message.error('请上传文件');
+    return;
+  } else if (!isFileMode && !formData.topic) {
     Message.error('请输入PPT主题');
     return;
   }
   
-  console.log('开始生成PPT，表单数据:', formData);
+  console.log(`开始生成PPT大纲，模式: ${isFileMode ? '文件生成' : '文本生成'}`);
   
   try {
     generating.value = true;
@@ -732,20 +825,26 @@ const handleGenerate = async () => {
     outlineResult.value = null;
     streamContent.value = '';
     
-    generateProgress.value = 10;
+    generateProgress.value = 0.1;
     progressStatus.value = '获取PPT模板...';
     console.log('步骤1: 获取PPT模板');
     
-    // 1. 获取主题模板
-    const themeResult = await getTheme();
-    console.log('获取模板结果:', themeResult);
-    if (!themeResult) {
-      Message.error('获取PPT模板失败');
-      generating.value = false;
-      return;
+    //如果没有选择主题模板，才获取主题模板    
+    if(localStorage.getItem('selectedTemplateId')){
+      localStorage.removeItem('selectedTemplateId');
+    }
+    else{
+      // 1. 获取主题模板
+      const themeResult = await getTheme();
+      console.log('获取模板结果:', themeResult);
+      if (!themeResult) {
+        Message.error('获取PPT模板失败');
+        generating.value = false;
+        return;
+      }
     }
     
-    generateProgress.value = 25;
+    generateProgress.value = 0.25;
     progressStatus.value = '创建生成任务...';
     console.log('步骤2: 创建生成任务');
     
@@ -757,7 +856,10 @@ const handleGenerate = async () => {
       generating.value = false;
       return;
     }
-    
+
+    // 保存当前任务ID，供后续生成PPT使用
+    currentTaskId = taskIdResult;
+
     console.log('步骤3: 生成大纲');
     // 3. 生成大纲
     const contentResult = await generateContent(taskIdResult);
@@ -768,17 +870,46 @@ const handleGenerate = async () => {
       return;
     }
     
-    console.log('步骤4: 生成PPT');
-    // 4. 生成PPT
-    const pptResult = await generatePptx(taskIdResult);
+    // 生成大纲成功后，等待用户确认
+    waitingForOutlineConfirmation.value = true;
+    generating.value = false; // 大纲生成完成，停止总的loading状态
+    progressStatus.value = '大纲已生成，请确认后继续';
+
+  } catch (error) {
+    console.error('生成大纲过程中出错:', error);
+    console.error('详细错误信息:', error instanceof Error ? error.stack : '未知错误');
+    Message.error('生成大纲失败: ' + error);
+    generating.value = false;
+  }
+};
+
+// 添加新函数 - 确认大纲并继续生成PPT
+const confirmOutlineAndGeneratePPT = async () => {
+  if (!currentTaskId) {
+    Message.error('任务ID丢失，请重新开始');
+    return;
+  }
+
+  try {
+    generatingPPT.value = true;
+    generateProgress.value = 0.75;
+    progressStatus.value = '正在生成PPT...';
+    
+    console.log('步骤4: 确认大纲并生成PPT');
+    // 保存修改后的大纲
+    markdown = streamContent.value;
+    
+    // 生成PPT
+    const pptResult = await generatePptx(currentTaskId);
     console.log('生成PPT结果:', pptResult, '生成的PPT信息:', pptInfo.value);
     if (!pptResult) {
       Message.error('生成PPT失败');
-      generating.value = false;
       return;
     }
-    
-    
+
+    pptGenerated.value = true;
+    generateProgress.value = 1;
+    progressStatus.value = 'PPT生成完成！';
     
     Notification.success({
       title: '生成成功',
@@ -788,12 +919,14 @@ const handleGenerate = async () => {
 
     // 将生成的PPT信息保存
     await savePptHistory(pptInfo.value);
+
   } catch (error) {
     console.error('生成PPT过程中出错:', error);
     console.error('详细错误信息:', error instanceof Error ? error.stack : '未知错误');
     Message.error('生成PPT失败: ' + error);
   } finally {
-    generating.value = false;
+    generatingPPT.value = false;
+    waitingForOutlineConfirmation.value = false;
   }
 };
 
@@ -1112,6 +1245,17 @@ onMounted(() => {
   color: #86909c;
 }
 
+.outline-action {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.outline-tip {
+  margin-bottom: 8px;
+}
+
 .result-card {
   margin-top: 32px;
   border-radius: 8px;
@@ -1239,5 +1383,12 @@ onMounted(() => {
   .ppt-cover {
     margin-bottom: 20px;
   }
+}
+
+/* 添加CSS样式 */
+.upload-tip {
+  font-size: 12px;
+  color: #86909c;
+  margin-top: 8px;
 }
 </style> 
