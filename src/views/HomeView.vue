@@ -53,6 +53,11 @@
             </a-menu-item>
 
             <a-menu-item key="4_0">
+              <icon-thumb-up />
+              视频推荐
+            </a-menu-item>
+
+            <a-menu-item key="5_0">
               <icon-list />
                 修改个人信息
             </a-menu-item>
@@ -150,6 +155,7 @@ const QuestionManage = defineAsyncComponent(() => import('./QuestionManage.vue')
 const ExamOrganization = defineAsyncComponent(() => import('./ExamOrganization.vue'));
 const Login = defineAsyncComponent(() => import('./Login.vue'));
 const AIChat = defineAsyncComponent(() => import('./AIChat.vue'));
+const Videos = defineAsyncComponent(() => import('./Videos.vue'));
 
 const isCollapsed = ref();
 const currentComponent = ref();
@@ -324,7 +330,17 @@ const handleMenuClick = (key: string) => {
       routes.value = [
         {
           path: '/',
-          label: '个人中心'
+          label: '视频推荐'
+        }
+      ]
+      currentComponent.value = markRaw(Videos);
+      break;
+
+      case '5_0':
+      routes.value = [
+        {
+          path: '/',
+          label: '修改个人信息'
         }
       ]
       currentComponent.value = markRaw(UserInfo);
@@ -396,7 +412,7 @@ onMounted(() => {
     }
     /*设置Logo图片 */
     .layout-demo :deep(.arco-layout-sider-light) .logo{
-      background-image: url(../assets/schoolLogo.png);
+      background-image: url(../assets/Logo.png);
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
@@ -408,7 +424,7 @@ onMounted(() => {
     }
     /*设置Logo图片 */
     .layout-demo :deep(.arco-layout-sider-light) .logo2{
-      background-image: url(../assets/schoolLogo2.png);
+      background-image: url(../assets/Logo2.png);
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;

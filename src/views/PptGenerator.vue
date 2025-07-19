@@ -114,7 +114,7 @@
               <div class="outline-action">
                 <div class="outline-tip">
                   <a-alert type="info" show-icon>
-                    您可以修改上面的大纲内容，确认后将开始生成PPT
+                    您可以修改上面的大纲内容，确认后将开始生成PPT(支持markdown格式)
                   </a-alert>
                 </div>
                 <a-button type="primary" size="large" @click="confirmOutlineAndGeneratePPT" :loading="generatingPPT">
@@ -321,6 +321,7 @@ const getOptions = async () => {
       usingTemplate.value = true;
       console.log('从localStorage获取到模板ID:', localStorage.getItem('selectedTemplateId'));
       templateId = localStorage.getItem('selectedTemplateId') || '';
+      localStorage.removeItem('selectedTemplateId');
       return ;
     }
     try{
@@ -366,7 +367,7 @@ const getOptions = async () => {
     }
 };
 
-// 获取模板（取第一个）
+// 获取模板（随机取）
 const getTheme = async () => {
     loading.value = true;
     try{
@@ -397,7 +398,7 @@ const getTheme = async () => {
                     // 随机取一个
                     const randomIndex = Math.floor(Math.random() * result.data.length);
                     templateId = result.data[randomIndex].id;
-                    console.log('获取到模板ID:', templateId);
+                    console.log('获取到模板ID:' + templateId + "随机数为:" + randomIndex);
                     return true;
                 }
                 else{
@@ -830,8 +831,8 @@ const handleGenerate = async () => {
     console.log('步骤1: 获取PPT模板');
     
     //如果没有选择主题模板，才获取主题模板    
-    if(localStorage.getItem('selectedTemplateId')){
-      localStorage.removeItem('selectedTemplateId');
+    if(templateId !== ''){
+      console.log('使用本地模板', templateId);
     }
     else{
       // 1. 获取主题模板
@@ -1110,18 +1111,21 @@ onMounted(() => {
   color: #4e5969;
 }
 
+
 .markdown-container {
   padding: 20px;
   background-color: #fff;
   border-radius: 6px;
+  
 }
-
+/* 不能滚动，避免出现两个滚动条 */
 .markdown-content {
   width: 100%;
   overflow-y: auto;
   max-height: 600px;
   line-height: 1.6;
   color: #1d2129;
+  overflow: hidden;
 }
 
 /* Markdown样式 */

@@ -28,6 +28,16 @@ const router = createRouter({
       name: 'pptGenerator',
       component: () => import('../views/PptGenerator.vue'),
     },
+    {
+      path: '/questions',
+      name: 'questions',
+      component: () => import('../views/Questions.vue'),
+    },
+    {
+      path: '/videos',
+      name: 'videos',
+      component: () => import('../views/Videos.vue'),
+    },
   ],
 })
 

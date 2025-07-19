@@ -29,6 +29,39 @@
             </a-avatar>
             <a-card :bordered="false" :class="['message-card', message.role]">
               <div v-html="formatMessage(message.content)"></div>
+              
+              <!-- 添加功能按钮区域 -->
+              <div v-if="message.role === 'assistant'" class="action-buttons">
+                <a-button 
+                  v-if="detectFunctionType(message.content) === 'ppt'" 
+                  type="primary" 
+                  size="small" 
+                  @click="navigateTo('pptGenerator')"
+                >
+                  <template #icon><icon-file /></template>
+                  前往PPT生成页面
+                </a-button>
+                
+                <a-button 
+                  v-if="detectFunctionType(message.content) === 'question'" 
+                  type="primary" 
+                  size="small" 
+                  @click="navigateTo('questions')"
+                >
+                  <template #icon><icon-question-circle /></template>
+                  前往题目生成页面
+                </a-button>
+                
+                <a-button 
+                  v-if="detectFunctionType(message.content) === 'video'" 
+                  type="primary" 
+                  size="small" 
+                  @click="navigateTo('videos')"
+                >
+                  <template #icon><icon-video-camera /></template>
+                  前往视频推荐页面
+                </a-button>
+              </div>
             </a-card>
           </div>
           
@@ -75,11 +108,18 @@
 import { ref, nextTick, onMounted } from 'vue';
 import * as marked from 'marked';
 import { Message } from '@arco-design/web-vue';
+import { useRouter } from 'vue-router';
 import {
   IconRobot,
   IconSend,
-  IconDelete
+  IconDelete,
+  IconFile,
+  IconQuestionCircle,
+  IconVideoCamera
 } from '@arco-design/web-vue/es/icon';
+
+// 引入路由
+const router = useRouter();
 
 // 定义接口
 interface Message {
@@ -118,9 +158,97 @@ const chatMessages = ref<HTMLElement | null>(null);
 const messages = ref<Message[]>([
   {
     role: "system", 
-    content: "你是智慧问答助手，负责帮用户答疑解难，用户的问题可能涉及多个领域，请根据用户的问题，给出准确的回答。回答可以加上emoji表情，让回答更加生动有趣。"
+    content: `
+你是一位"AI教学资源辅助智能体"，同时具备以下三重身份：
+1) 教案设计师：擅长把任何知识点拆解成符合布鲁姆认知层级的教学目标、课堂活动与评估方式。  
+2) 内容生成器：可产出高质量PPT大纲、原创试题（含答案与解析）、可视化图表脚本、互动小游戏。  
+3) 24h教育顾问：能即时回答学生、家长、教师的任何教学/学习疑问，并给出可落地的下一步行动清单。
+
+行为守则  
+- 精准教学：所有输出先标注适用学段（小学/初中/高中/本科/职教/成人），再给出内容。  
+- 证据溯源：如引用资料，在文末附可公开访问的链接或DOI。  
+- 透明可控：若用户未指定风格，默认"简洁+可视化"，并在末尾提示"如需学术/活泼/极简风格，请回复'切换风格'"。
+
+核心功能指令 
+1. 生成PPT：  
+   用户："生成高一物理《牛顿第二定律》PPT，25页，双语"  
+   你：内容正文输出【ppt描述+大纲+备注】三部分，并提醒用户前往PPT生成页面操作。  
+
+2. 原创出题：  
+   用户："出5道小学四年级数学应用题，情境为超市购物，附评分标准。"  
+   你：内容正文按【考点+题目概要】两部分呈现，并提醒用户前往题目生成界面操作。  
+
+3. 资源推荐：  
+   用户："推荐初中英语语法动画，CC字幕，3–5分钟。"  
+   你：内容正文列出3条符合要求的视频资源关键词，并提醒用户前往视频推荐页面。  
+
+4. 即时问答：  
+   用户："我家孩子二年级，识字量低，不爱阅读，怎么办？"  
+   你：内容正文用"原因→策略→工具→7天打卡表"四步回答。  
+
+5. 风格切换：  
+   用户："切换为'幽默漫画风'。"  
+   你：后续所有输出改用轻松漫画口吻，并插入emoji/颜文字。
+
+输出模板示例  
+适用学段：（小学/初中/高中/本科/职教/成人）
+核心功能指令：（生成PPT/原创出题/资源推荐/即时问答/风格切换）
+内容正文： 
+如需调整回答风格，请直接说"改为XX风格"。
+
+记忆与个性化  
+- 每轮对话记住用户身份（教师/学生/家长/教研员）。  
+- 若用户说"记住我是高二班主任，偏好实验探究类资源"，则在后续输出中优先推荐实验视频、探究任务单。
+    `
   }
 ]);
+
+// 检测AI回复中的功能类型
+const detectFunctionType = (content: string): string | null => {
+  if (!content) return null;
+  
+  // 检测是否包含"核心功能指令：生成PPT"或相似文本
+  if (content.includes('核心功能指令：生成PPT') || 
+      content.includes('前往PPT生成页面') ||
+      content.includes('PPT大纲') && content.includes('生成PPT')) {
+    return 'ppt';
+  }
+  
+  // 检测是否包含"核心功能指令：原创出题"或相似文本
+  if (content.includes('核心功能指令：原创出题') || 
+      content.includes('前往题目生成界面') ||
+      content.includes('出题') && content.includes('题目生成')) {
+    return 'question';
+  }
+  
+  // 检测是否包含"核心功能指令：资源推荐"或相似文本
+  if (content.includes('核心功能指令：资源推荐') || 
+      content.includes('前往视频推荐页面') ||
+      content.includes('视频资源')) {
+    return 'video';
+  }
+  
+  return null;
+};
+
+// 导航到指定页面
+const navigateTo = (routeName: string): void => {
+  // 构建路由路径
+  let path = '/';
+  switch(routeName) {
+    case 'pptGenerator':
+      path = '/ppt-generator';
+      break;
+    case 'questions':
+      path = '/questions';
+      break;
+    case 'videos':
+      path = '/videos';
+      break;
+  }
+  // 在新窗口中打开
+  window.open(path, '_blank');
+};
 
 // 消息格式化（支持Markdown）
 const formatMessage = (content: string): string => {
@@ -297,6 +425,13 @@ onMounted(() => {
 
 .message-card.assistant {
   background-color: var(--color-bg-2);
+}
+
+/* 添加功能按钮样式 */
+.action-buttons {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
 }
 
 .streaming::after {
