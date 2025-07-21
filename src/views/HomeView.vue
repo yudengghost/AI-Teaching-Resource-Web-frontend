@@ -14,7 +14,7 @@
             </a-menu-item>
     
             <a-sub-menu key="1">
-              <template #icon><icon-thumb-up /></template>
+              <template #icon><icon-apps /></template>
               <template #title>PPT管理</template>
               <a-menu-item key="1_0">
                 <icon-list />
@@ -25,7 +25,7 @@
                 模板查询
               </a-menu-item>
               <a-menu-item key="1_2">
-                <icon-thumb-up />
+                <icon-bulb />
                 一键生成PPT
               </a-menu-item>
             </a-sub-menu>
@@ -38,17 +38,17 @@
                 题目生成
               </a-menu-item>
               <a-menu-item key="2_1">
-                <icon-thumb-up />
+                <icon-list />
                 题目管理
               </a-menu-item>
               <a-menu-item key="2_2">
-                <icon-thumb-up />
+                <icon-file />
                 试卷组织
               </a-menu-item>
             </a-sub-menu>
 
             <a-menu-item key="3_0">
-              <icon-thumb-up />
+              <icon-robot />
               AI助手
             </a-menu-item>
 
@@ -58,7 +58,7 @@
             </a-menu-item>
 
             <a-menu-item key="5_0">
-              <icon-list />
+              <icon-user />
                 修改个人信息
             </a-menu-item>
     
@@ -70,7 +70,7 @@
             <div class="header" style="font-size: medium;">
               <a-breadcrumb :routes="routes"/>
               <div class="header-actions">
-                <a-button type="primary" @click="isLoggedIn ? handleLogout() : showLoginModal()" class="login-btn">
+                <a-button type="primary" :status="isLoggedIn ? 'warning' : 'normal'" @click="isLoggedIn ? handleLogout() : showLoginModal()" class="login-btn">
                   <template #icon><icon-user /></template>
                   {{ isLoggedIn ? '退出登录' : '登录' }}
                 </a-button>
@@ -139,7 +139,10 @@ import {
   IconCloud,
   IconList,
   IconQuestion,
-  IconHeart,
+  IconApps,
+  IconBulb,
+  IconFile,
+  IconRobot,
   IconMoonFill,
   IconSunFill,
 } from '@arco-design/web-vue/es/icon';

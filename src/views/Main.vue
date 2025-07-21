@@ -47,6 +47,16 @@
             <h3>试卷组织</h3>
             <p>根据题目库快速组织试卷，提高教学效率</p>
           </div>
+          <div class="feature-card" @click="$emit('navigate', '3_0')">
+            <div class="feature-icon">🤖</div>
+            <h3>AI助手</h3>
+            <p>AI助手，根据教学内容，智能推荐功能</p>
+          </div>
+          <div class="feature-card" @click="$emit('navigate', '4_0')">
+            <div class="feature-icon">🎥</div>
+            <h3>视频推荐</h3>
+            <p>根据教学内容，智能推荐视频</p>
+          </div>
         </div>
       </section>
 

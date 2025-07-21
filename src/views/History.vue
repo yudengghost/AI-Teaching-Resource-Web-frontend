@@ -1,6 +1,9 @@
 <template>
   <div class="history-container">
-    <a-card class="history-card" title="PPT历史记录" :bordered="false">
+    <a-card class="history-card" :bordered="false">
+      <template #title>
+        <h3>PPT历史记录</h3>
+      </template>
       <div class="history-header">
         <a-input-search
           v-model="searchKeyword"
