@@ -60,7 +60,7 @@
         </div>
       </section>
 
-      <section class="advantages-section">
+      <!-- <section class="advantages-section">
         <h2>平台优势</h2>
         <ul class="advantage-list">
           <li><strong>提升效率</strong>：减少备课时间，将更多精力投入教学互动</li>
@@ -68,7 +68,7 @@
           <li><strong>资源整合</strong>：集中管理教学资源，避免重复工作</li>
           <li><strong>持续更新</strong>：AI模型不断学习进步，生成质量持续提升</li>
         </ul>
-      </section>
+      </section> -->
     </div>
   </div>
 </template>
@@ -103,7 +103,6 @@ defineEmits(['navigate']);
 .content {
   display: flex;
   flex-direction: column;
-  gap: 40px;
 }
 
 section {

@@ -4,6 +4,7 @@
           <div :class="[isCollapsed ? 'logo2' : 'logo']" />
           <a-menu
             :default-selected-keys="['0_1']"
+            :selected-keys="selectedKeys"
             :style="{ width: '100%' }"
             @menu-item-click = handleMenuClick
           >
@@ -12,21 +13,26 @@
               <IconHome></IconHome>
               首页
             </a-menu-item>
+
+            <a-menu-item key="3_0">
+              <icon-robot />
+              AI 助手
+            </a-menu-item>
     
             <a-sub-menu key="1">
               <template #icon><icon-apps /></template>
               <template #title>PPT管理</template>
-              <a-menu-item key="1_0">
-                <icon-list />
-                历史记录
+              <a-menu-item key="1_2">
+                <icon-bulb />
+                一键生成PPT
               </a-menu-item>
               <a-menu-item key="1_1">
                 <icon-cloud />
                 模板查询
               </a-menu-item>
-              <a-menu-item key="1_2">
-                <icon-bulb />
-                一键生成PPT
+              <a-menu-item key="1_0">
+                <icon-list />
+                历史记录
               </a-menu-item>
             </a-sub-menu>
 
@@ -46,11 +52,6 @@
                 试卷组织
               </a-menu-item>
             </a-sub-menu>
-
-            <a-menu-item key="3_0">
-              <icon-robot />
-              AI助手
-            </a-menu-item>
 
             <a-menu-item key="4_0">
               <icon-thumb-up />
@@ -164,6 +165,7 @@ const isCollapsed = ref();
 const currentComponent = ref();
 const loginModalVisible = ref(false);
 const isLoggedIn = ref(false);
+const selectedKeys = ref(['0_1']);
 
 const router = useRouter();
 
@@ -208,6 +210,7 @@ const handleMenuClick = (key: string) => {
         }
       ]
       currentComponent.value = markRaw(Main);
+      selectedKeys.value = ['0_1'];
       break;
 
 
@@ -227,6 +230,7 @@ const handleMenuClick = (key: string) => {
         },
       ]
       currentComponent.value = markRaw(History);
+      selectedKeys.value = ['1_0'];
       break;
 
     case '1_1':
@@ -245,6 +249,7 @@ const handleMenuClick = (key: string) => {
         },
       ]
       currentComponent.value = markRaw(Themes);
+      selectedKeys.value = ['1_1'];
       break;
 
     case '1_2':
@@ -263,6 +268,7 @@ const handleMenuClick = (key: string) => {
         },
       ]
       currentComponent.value = markRaw(PptGenerator);
+      selectedKeys.value = ['1_2'];
       break;
 
     case '2_0':
@@ -281,6 +287,7 @@ const handleMenuClick = (key: string) => {
         },
       ]
       currentComponent.value = markRaw(Questions);
+      selectedKeys.value = ['2_0'];
       break;
 
     case '2_1':
@@ -299,6 +306,7 @@ const handleMenuClick = (key: string) => {
         }
       ]
       currentComponent.value = markRaw(QuestionManage);
+      selectedKeys.value = ['2_1'];
       break;
 
       case '2_2':
@@ -317,6 +325,7 @@ const handleMenuClick = (key: string) => {
         }
       ]
       currentComponent.value = markRaw(ExamOrganization);
+      selectedKeys.value = ['2_2'];
       break;
 
       case '3_0':
@@ -327,6 +336,7 @@ const handleMenuClick = (key: string) => {
           }
         ]
         currentComponent.value = markRaw(AIChat);
+        selectedKeys.value = ['3_0'];
         break;
 
       case '4_0':
@@ -337,6 +347,7 @@ const handleMenuClick = (key: string) => {
         }
       ]
       currentComponent.value = markRaw(Videos);
+      selectedKeys.value = ['4_0'];
       break;
 
       case '5_0':
@@ -347,6 +358,7 @@ const handleMenuClick = (key: string) => {
         }
       ]
       currentComponent.value = markRaw(UserInfo);
+      selectedKeys.value = ['5_0'];
       break;
 
     default:

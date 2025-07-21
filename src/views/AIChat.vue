@@ -13,14 +13,49 @@
       </template>
 
       <div class="chat-messages" ref="chatMessages">
-        <a-empty
-            v-if="messages.length <= 1"   
-            description="🤖开始和AI助手聊天吧"
-            style="height: 50vh;display: flex;align-items: center;justify-content: center;"
-        >
-            <template #image>
-            </template>
-        </a-empty>
+        <!-- 替换原来的a-empty组件，使用自定义设计 -->
+        <div v-if="messages.length <= 1" class="custom-empty-state">
+          <div class="empty-state-content">
+            <div class="robot-avatar-container">
+              <div class="robot-avatar">
+                <icon-robot />
+              </div>
+
+            </div>
+            
+            <div class="empty-state-text">
+              <h2>欢迎使用 AI 教学助手</h2>
+              <p>我可以帮您准备教学资料、生成试题或回答教育相关问题</p>
+            </div>
+            
+            <div class="suggestion-cards">
+              <div class="suggestion-card" @click="userInput = '请帮我生成一份初中语文《水浒传》的PPT大纲'">
+                <icon-file />
+                <span>生成PPT大纲</span>
+              </div>
+              <div class="suggestion-card" @click="userInput = '出5道高中物理力学题目'">
+                <icon-question-circle />
+                <span>生成习题</span>
+              </div>
+              <div class="suggestion-card" @click="userInput = '推荐3个适合初中生的数学教学视频'">
+                <icon-video-camera />
+                <span>推荐教学视频</span>
+              </div>
+              <div class="suggestion-card" @click="userInput = '如何提高学生的学习积极性？'">
+                <icon-bulb />
+                <span>教学方法咨询</span>
+              </div>
+              <div class="suggestion-card" @click="userInput = '设计一份初中语文《水浒传》教案，包含教学目标、教学重难点、教学过程、板书设计、教学反思。'">
+                <icon-pen />
+                <span>教案设计</span>
+              </div>
+              <div class="suggestion-card" @click="userInput = '切换为幽默风格'">
+                <icon-palette />
+                <span>风格切换</span>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <template v-else>
           <div v-for="(message, index) in messages.slice(1)" :key="index" :class="['message-item', message.role]">
@@ -36,7 +71,7 @@
                   v-if="detectFunctionType(message.content) === 'ppt'" 
                   type="primary" 
                   size="small" 
-                  @click="navigateTo('pptGenerator')"
+                  @click="$emit('navigate', '1_2')"
                 >
                   <template #icon><icon-file /></template>
                   前往PPT生成页面
@@ -46,7 +81,7 @@
                   v-if="detectFunctionType(message.content) === 'question'" 
                   type="primary" 
                   size="small" 
-                  @click="navigateTo('questions')"
+                  @click="$emit('navigate', '2_0')"
                 >
                   <template #icon><icon-question-circle /></template>
                   前往题目生成页面
@@ -56,7 +91,7 @@
                   v-if="detectFunctionType(message.content) === 'video'" 
                   type="primary" 
                   size="small" 
-                  @click="navigateTo('videos')"
+                  @click="$emit('navigate', '4_0')"
                 >
                   <template #icon><icon-video-camera /></template>
                   前往视频推荐页面
@@ -115,7 +150,10 @@ import {
   IconDelete,
   IconFile,
   IconQuestionCircle,
-  IconVideoCamera
+  IconVideoCamera,
+  IconBulb,
+  IconPen,
+  IconPalette
 } from '@arco-design/web-vue/es/icon';
 
 // 引入路由
@@ -159,15 +197,16 @@ const messages = ref<Message[]>([
   {
     role: "system", 
     content: `
-你是一位"AI教学资源辅助智能体"，同时具备以下三重身份：
+你是一位"AI教学资源辅助智能体"，同时具备以下四重身份：
 1) 教案设计师：擅长把任何知识点拆解成符合布鲁姆认知层级的教学目标、课堂活动与评估方式。  
-2) 内容生成器：可产出高质量PPT大纲、原创试题（含答案与解析）、可视化图表脚本、互动小游戏。  
-3) 24h教育顾问：能即时回答学生、家长、教师的任何教学/学习疑问，并给出可落地的下一步行动清单。
+2) 内容生成器：可产出高质量PPT大纲、原创试题、可视化图表脚本、互动小游戏。 
+3) 资源推荐：可推荐符合教学目标的优质教学资源，包括视频、音频、文档等。
+4) 24h教育顾问：能即时回答学生、家长、教师的任何教学/学习疑问，并给出可落地的下一步行动清单。
 
 行为守则  
 - 精准教学：所有输出先标注适用学段（小学/初中/高中/本科/职教/成人），再给出内容。  
 - 证据溯源：如引用资料，在文末附可公开访问的链接或DOI。  
-- 透明可控：若用户未指定风格，默认"简洁+可视化"，并在末尾提示"如需学术/活泼/极简风格，请回复'切换风格'"。
+- 透明可控：若用户未指定风格，默认"简洁+可视化"，并在末尾提示"如需学术/活泼/极简风格，请回复'切换为xx风格'"。
 
 核心功能指令 
 1. 生成PPT：  
@@ -180,19 +219,23 @@ const messages = ref<Message[]>([
 
 3. 资源推荐：  
    用户："推荐初中英语语法动画，CC字幕，3–5分钟。"  
-   你：内容正文列出3条符合要求的视频资源关键词，并提醒用户前往视频推荐页面。  
+   你：内容正文列出3条符合要求的视频资源关键词，并提醒用户前往视频推荐页面。 
+   
+4. 教案设计：
+   用户："设计一份初中语文《水浒传》教案，包含教学目标、教学重难点、教学过程、板书设计、教学反思。"
+   你：内容正文输出【教学目标+教学重难点+教学过程+板书设计+教学反思】五部分。
 
-4. 即时问答：  
+5. 即时问答：  
    用户："我家孩子二年级，识字量低，不爱阅读，怎么办？"  
    你：内容正文用"原因→策略→工具→7天打卡表"四步回答。  
 
-5. 风格切换：  
+6. 风格切换：  
    用户："切换为'幽默漫画风'。"  
    你：后续所有输出改用轻松漫画口吻，并插入emoji/颜文字。
 
 输出模板示例  
 适用学段：（小学/初中/高中/本科/职教/成人）
-核心功能指令：（生成PPT/原创出题/资源推荐/即时问答/风格切换）
+核心功能指令：（生成PPT/原创出题/资源推荐/教案设计/即时问答/风格切换）
 内容正文： 
 如需调整回答风格，请直接说"改为XX风格"。
 
@@ -231,24 +274,6 @@ const detectFunctionType = (content: string): string | null => {
   return null;
 };
 
-// 导航到指定页面
-const navigateTo = (routeName: string): void => {
-  // 构建路由路径
-  let path = '/';
-  switch(routeName) {
-    case 'pptGenerator':
-      path = '/ppt-generator';
-      break;
-    case 'questions':
-      path = '/questions';
-      break;
-    case 'videos':
-      path = '/videos';
-      break;
-  }
-  // 在新窗口中打开
-  window.open(path, '_blank');
-};
 
 // 消息格式化（支持Markdown）
 const formatMessage = (content: string): string => {
@@ -506,5 +531,126 @@ onMounted(() => {
 :deep(ul), :deep(ol) {
   padding-left: 20px;
   margin: 10px 0;
+}
+
+/* 自定义空白状态样式 */
+.custom-empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  background-color: var(--color-fill-1);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.empty-state-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.robot-avatar-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.robot-avatar {
+  width: 100px;
+  height: 100px;
+  background-color: var(--color-primary-light-1);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  color: var(--color-primary);
+}
+
+.pulse-circles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pulse-circle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-primary-light-2);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.circle-1 {
+  animation-delay: -0.3s;
+}
+.circle-2 {
+  animation-delay: -0.1s;
+}
+.circle-3 {
+  animation-delay: 0.1s;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}
+
+.empty-state-text h2 {
+  font-size: 24px;
+  color: var(--color-text-1);
+  margin-bottom: 8px;
+}
+
+.empty-state-text p {
+  font-size: 16px;
+  color: var(--color-text-3);
+  margin-bottom: 20px;
+}
+
+.suggestion-cards {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.suggestion-card {
+  background-color: var(--color-bg-2);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 200px; /* Fixed width for cards */
+}
+
+.suggestion-card:hover {
+  background-color: var(--color-fill-2);
+}
+
+.suggestion-card span {
+  font-size: 14px;
+  color: var(--color-text-1);
 }
 </style>
