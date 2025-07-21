@@ -102,10 +102,10 @@ import {
         {
           "role": "system",
           "content": `
-          你是视频搜索助手。请执行以下步骤：
+          你是bilibili视频搜索助手。请执行以下步骤：
           1.联网搜索视频 
-          2.返回与关键词相关的视频结果 
-          3.确保每个视频链接指向其对应的实际播放页面 
+          2.必须返回与关键词相关的视频结果，包含标题和视频链接 
+          3.确保每个视频链接指向其对应的实际播放页面，你可以打开链接阅读进行二次确认
           4.返回格式：
           标题:
           链接:
@@ -213,39 +213,8 @@ import {
     return results;
   };
 
-  // 加载视频封面
-  const fetchVideoCovers = async () => {
-      
-    //   try {
-    //     // 从后端获取视频封面
-    //     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/video/getVideoCover?videoUrl=${searchResults.value[i].url}`);
+  const fetchVideoCoversStatic = async () => {
         
-    //     if (!response.ok) {
-    //       throw new Error('获取视频封面失败');
-    //     }
-        
-    //     const result = await response.json();
-        
-    //     if (result.code === 0) {
-    //       searchResults.value[i].coverUrl = result.data;
-    //     } else {
-    //       throw new Error(result.message || '获取视频封面失败');
-    //     }
-    //   } catch (error) {
-    //     console.error('获取视频封面失败:', error);
-    //     // 获取失败时使用默认图片作为备用
-    //     const getAssetUrl = (name: string) => {
-    //       return new URL(`../assets/${name}`, import.meta.url).href;
-    //     };
-    //     const imageIndex = (i % 5) + 1;
-    //     searchResults.value[i].coverUrl = getAssetUrl(`video${imageIndex}.jpg`);
-    //   } finally {
-    //     searchResults.value[i].loading = false;
-    //   }
-    // }
-
-
-    
     // 先使用静态封面替代
 
     // 使用正确的URL格式引用静态资源
@@ -299,6 +268,41 @@ import {
       searchResults.value[i].loading = false;
       }
     }
+  }
+
+  // 加载视频封面
+  const fetchVideoCovers = async () => {
+    for (let i = 0; i < searchResults.value.length; i++) {
+      try {
+        // 从后端获取视频封面
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/video/getVideoCover?videoUrl=${searchResults.value[i].url}`);
+        
+        if (!response.ok) {
+          throw new Error('获取视频封面失败');
+        }
+        
+        const result = await response.json();
+        
+        if (result.code === 0) {
+          // 直接使用返回的Base64编码数据创建Data URL
+          searchResults.value[i].coverUrl = `data:image/jpeg;base64,${result.data}`;
+          searchResults.value[i].title = result.title;
+        } else {
+          throw new Error(result.message || '获取视频封面失败');
+        }
+      } catch (error) {
+        console.error('获取视频封面失败:', error);
+        // 获取失败时使用默认图片作为备用
+        const getAssetUrl = (name: string) => {
+          return new URL(`../assets/${name}`, import.meta.url).href;
+        };
+        const imageIndex = (i % 5) + 1;
+        searchResults.value[i].coverUrl = getAssetUrl(`video${imageIndex}.jpg`);
+      } finally {
+        searchResults.value[i].loading = false;
+      }
+    }
+
   };
 
   // 收藏或取消收藏视频
@@ -368,7 +372,8 @@ import {
       
       searchResults.value = results;
       if (results.length > 0) {
-        // 获取封面
+        // 获取封面(静态)
+        // fetchVideoCoversStatic();
         fetchVideoCovers();
       }
       if (results.length === 0) {
