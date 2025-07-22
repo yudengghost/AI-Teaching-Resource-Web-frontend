@@ -60,7 +60,7 @@
         :pagination="false"
       >
         <template #columns>
-          <a-table-column title="主题" data-index="subject" />
+          <a-table-column title="主题" data-index="subject" :minWidth="90" :ellipsis="true" :tooltip="true"/>
           <a-table-column title="类型" data-index="type" :width="100">
             <template #cell="{ record }">
               <a-tag>{{ record.type }}</a-tag>
@@ -71,8 +71,8 @@
               <a-tag :color="getDifficultyColor(record.level)">{{ record.level }}</a-tag>
             </template>
           </a-table-column>
-          <a-table-column title="创建时间" data-index="createTime" :width="180" />
-          <a-table-column title="创建人" data-index="username" :width="120" />
+          <a-table-column title="创建时间" data-index="createTime" :minWidth="90" :ellipsis="true" :tooltip="true"/>
+          <a-table-column title="创建人" data-index="username" :minWidth="90" :ellipsis="true" :tooltip="true"/>
           <a-table-column title="操作" :width="180">
             <template #cell="{ record }">
               <a-space>

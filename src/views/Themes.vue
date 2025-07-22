@@ -86,16 +86,19 @@ const columns = ref([
         title: '主题',
         dataIndex: 'subject',
         ellipsis: true,
+        tooltip: true
     },
     {
         title: '类目',
         dataIndex: 'category',
-        width: 120,
+        ellipsis: true,
+        tooltip: true
     },
     {
         title: '风格',
         dataIndex: 'style',
-        width: 120,
+        ellipsis: true,
+        tooltip: true
     },
     {
         title: '页数',
@@ -105,12 +108,13 @@ const columns = ref([
     {
         title: '创建时间',
         dataIndex: 'createTime',
-        width: 180,
+        ellipsis: true,
+        tooltip: true
     },
     {
         title: '操作',
         slotName: 'operations',
-        width: 150,
+        width: 100,
         fixed: 'right',
     }
 ]);

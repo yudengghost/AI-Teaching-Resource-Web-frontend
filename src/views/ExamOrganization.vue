@@ -81,7 +81,7 @@
           :row-selection="rowSelection"
         >
           <template #columns>
-            <a-table-column title="主题" data-index="subject" />
+            <a-table-column title="主题" data-index="subject" :ellipsis="true" :tooltip="true"/>
             <a-table-column title="类型" data-index="type" :width="100">
               <template #cell="{ record }">
                 <a-tag>{{ record.type }}</a-tag>

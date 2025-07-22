@@ -37,9 +37,9 @@
               </div>
             </template>
           </a-table-column>
-          <a-table-column title="主题" data-index="subject" />
-          <a-table-column title="创建人" data-index="username" :width="120" />
-          <a-table-column title="生成时间" data-index="createTime">
+          <a-table-column title="主题" data-index="subject" :ellipsis="true" :tooltip="true"/>
+          <a-table-column title="创建人" data-index="username" :width="120" :ellipsis="true" :tooltip="true"/>
+          <a-table-column title="生成时间" data-index="createTime" :ellipsis="true" :tooltip="true">
             <template #cell="{ record }">
               {{ formatDate(record.createTime) }}
             </template>
