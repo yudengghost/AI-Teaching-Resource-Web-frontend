@@ -989,8 +989,7 @@ onMounted(() => {
 .ppt-generator-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 32px;
-  min-height: 100vh;
+  padding: 0 32px 0 32px;
 }
 
 .template-mode-tip {
@@ -1038,13 +1037,15 @@ onMounted(() => {
 }
 
 .generate-btn {
-  margin-top: 12px;
+  margin: 12px auto 0 auto;
+  width: 150px;
   height: 48px;
   font-size: 16px;
-  font-weight: 500;
   background: linear-gradient(135deg, #165DFF 0%, #0CB6FF 100%);
   border: none;
+  border-radius: 30px;
   transition: all 0.3s ease;
+  font-weight: bold;
 }
 
 .generate-btn:hover {

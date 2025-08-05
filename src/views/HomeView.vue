@@ -417,7 +417,7 @@ onMounted(() => {
     
 <style scoped>
     .layout-demo {
-      height: 99vh;
+      height: 100vh;
       background: var(--color-bg-2);
       border: 1px solid var(--color-border);
     }

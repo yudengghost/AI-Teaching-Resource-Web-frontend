@@ -11,6 +11,8 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@arco-themes/vue-weixing": "^0.0.8",
+    "@arco-themes/vue-yudeng-test1": "^0.0.1",
     "echarts": "^5.6.0",
     "highlight.js": "^11.11.1",
     "jwt-decode": "^4.0.0",

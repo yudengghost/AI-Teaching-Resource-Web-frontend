@@ -1,0 +1,11 @@
+::-webkit-scrollbar {
+    width: 8px;
+    background: var(--color-border-1);
+  }
+::-webkit-scrollbar-thumb {
+    background: var(--color-border-3);
+    border-radius: 8px;
+}
+#bod {
+  overflow: hidden;
+}

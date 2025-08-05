@@ -52,6 +52,7 @@
         </a-form-item>
 
         <a-button
+          class="q-button"
           type="primary"
           :loading="loading"
           @click="generateQuestion"
@@ -276,5 +277,10 @@ onMounted(() => {
 
 .generated-content :deep(p) {
   margin-bottom: 12px;
+}
+
+.q-button {
+  width: 100px;
+  margin-left: auto;
 }
 </style>

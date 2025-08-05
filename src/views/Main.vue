@@ -1,8 +1,8 @@
 <template>
   <div class="main-container">
-    <header class="header">
+    <!-- <header class="header">
       <h1 class="title">AI教学资源生成管理平台</h1>
-    </header>
+    </header> -->
 
     <div class="content">
       <section class="intro-section">
@@ -20,7 +20,7 @@
           <div class="feature-card" @click="$emit('navigate', '1_2')">
             <div class="feature-icon">📊</div>
             <h3>一键生成PPT</h3>
-            <p>根据教学内容自动生成结构清晰、内容丰富的PPT，支持多种学科和教学风格</p>
+            <p>根据教学内容自动生成结构清晰、内容丰富的PPT，支持多种学科和风格</p>
           </div>
           <div class="feature-card" @click="$emit('navigate', '1_0')">
             <div class="feature-icon">🗂️</div>
@@ -82,7 +82,7 @@ defineEmits(['navigate']);
 .main-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0 20px;
   font-family: 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
 }
 
