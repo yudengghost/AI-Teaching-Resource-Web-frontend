@@ -1,7 +1,7 @@
 <template>
     <div class="themes-container">
         <div class="themes-header">
-            <h2>PPT模板库</h2>
+            <h2>🗂️PPT模板库</h2>
             <div class="filter-section">
                 <a-select v-model="requestBody.filters.category" placeholder="选择类目" allow-clear style="width: 120px; margin-right: 15px;">
                     <a-option v-for="option in categoryOptions" :key="option.value" :value="option.value">
@@ -243,7 +243,7 @@ onMounted(() => {
 
 <style scoped>
 .themes-container {
-    padding: 20px;
+    padding: 0 20px;
 }
 
 .themes-header {
@@ -254,8 +254,6 @@ onMounted(() => {
 }
 
 .themes-header h2 {
-    margin: 0;
-    font-size: 20px;
     color: var(--color-text-1);
 }
 

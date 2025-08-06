@@ -1,10 +1,8 @@
 <template>
   <div class="history-container">
-    <a-card class="history-card" :bordered="false">
-      <template #title>
-        <h3>PPT历史记录</h3>
-      </template>
-      <div class="history-header">
+    <div class="history-header">
+      <h2>📑PPT历史记录</h2>
+      <div class="header-actions">
         <a-input-search
           v-model="searchKeyword"
           placeholder="搜索主题"
@@ -14,7 +12,8 @@
         />
         <a-button type="primary" @click="refreshHistory">刷新</a-button>
       </div>
-
+    </div>
+    
       <a-table
         :data="filteredHistory"
         :loading="loading"
@@ -60,7 +59,6 @@
           </div>
         </template>
       </a-table>
-    </a-card>
 
     <!-- 大纲详情对话框 -->
     <a-modal
@@ -278,26 +276,46 @@ onMounted(() => {
 <style scoped>
 .history-container {
   max-width: 1200px;
-  margin: 20px auto;
-  padding: 0 16px;
-}
-
-.history-card {
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  background-color: var(--color-bg-3);
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .history-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
   align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.history-header h2 {
+  color: var(--color-text-1);
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .history-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 .history-table {
   margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
 .cover-container {

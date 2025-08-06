@@ -2,7 +2,7 @@
   <div class="questions-container">
     <a-card class="question-card">
       <template #title>
-        <h2 class="card-title">AI题目生成器</h2>
+        <h2 class="card-title">✏️AI题目生成器</h2>
       </template>
 
       <a-form :model="form" layout="vertical">
@@ -46,7 +46,7 @@
           <a-textarea
             v-model="form.requirements"
             placeholder="请输入题目要求，如：高中物理牛顿第二定律相关的题目"
-            :auto-size="{ minRows: 3, maxRows: 6 }"
+            :auto-size="{ minRows: 10, maxRows: 16 }"
             :max-length="255"
           />
         </a-form-item>
@@ -249,7 +249,7 @@ onMounted(() => {
 }
 
 .card-title {
-  text-align: center;
+  text-align: left;
   margin-bottom: 16px;
   color: var(--color-text-1);
   font-size: 24px;

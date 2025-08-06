@@ -2,7 +2,8 @@
   <div class="question-manage-container">
     <a-card class="question-filter-card">
       <template #title>
-        <h2 class="card-title">题目管理</h2>
+        <h2 class="card-title">📝题目管理</h2>
+
       </template>
 
       <a-form :model="filterForm" layout="horizontal">

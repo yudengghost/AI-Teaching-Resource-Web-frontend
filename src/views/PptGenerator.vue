@@ -989,7 +989,7 @@ onMounted(() => {
 .ppt-generator-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 32px 0 32px;
+  padding: 0 23px 0 23px;
 }
 
 .template-mode-tip {
