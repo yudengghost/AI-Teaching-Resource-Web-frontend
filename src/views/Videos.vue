@@ -90,7 +90,31 @@ import {
   
   const keyword = ref('');
   const loading = ref(false);
-  const searchResults = ref<VideoResult[]>([]);
+  // 有默认数据
+  const searchResults = ref<VideoResult[]>([
+    {
+      title: '数据结构（Java版）',
+      url: 'https://www.icourse163.org/course/ZZU-1207193805?from=searchPage&outVendor=zw_mooc_pcssjg_',
+      coverUrl: '../src/assets/pre_1.jpg',
+      loading: false,
+      favorited: false
+    },
+    {
+      title: '1次讲清算法竞赛核心： 数论与动态规划',
+      url: 'https://www.lanqiao.cn/courses/41585',
+      coverUrl: '../src/assets/pre_2.jpg',
+      loading: false,
+      favorited: false
+    },
+    {
+      title: '已完结 SpringBoot3+Vue3 前后端分离项目（4K蓝光画质）基于Session的校验方案',
+      url: 'https://www.bilibili.com/video/BV1rT411W7QM/?spm_id_from=333.1387.favlist.content.click&vd_source=7b5c92eed2ed5c6c31b53ac4c54bea62',
+      coverUrl: '../src/assets/pre_3.jpg',
+      loading: false,
+      favorited: false
+    },
+
+  ]);
   
   // 调用KIMI API
   const searchVideosFromAPI = async (searchKeyword: string) => {

@@ -62,42 +62,54 @@
             <a-avatar :style="{ backgroundColor: message.role === 'user' ? '#B0C4DE' : '#9370DB' }">
               {{ message.role === 'user' ? '👤' : '🤖' }}
             </a-avatar>
-            <a-card :bordered="false" :class="['message-card', message.role]">
-              <div v-html="formatMessage(message.content)"></div>
-              
-              <!-- 添加功能按钮区域 -->
-              <div v-if="message.role === 'assistant'" class="action-buttons">
-                <a-button 
-                  v-if="detectFunctionType(message.content) === 'ppt'" 
-                  type="primary" 
-                  size="small" 
-                  @click="$emit('navigate', '1_2')"
-                >
-                  <template #icon><icon-file /></template>
-                  前往PPT生成页面
-                </a-button>
+            <div class="message-content-wrapper">
+              <a-card :bordered="false" :class="['message-card', message.role]">
+                <div v-html="formatMessage(message.content)"></div>
                 
+                <!-- 添加功能按钮区域 -->
+                <div v-if="message.role === 'assistant'" class="action-buttons">
+                  <a-button 
+                    v-if="detectFunctionType(message.content) === 'ppt'" 
+                    type="primary" 
+                    size="small" 
+                    @click="$emit('navigate', '1_2')"
+                  >
+                    <template #icon><icon-file /></template>
+                    前往PPT生成页面
+                  </a-button>
+                  
+                  <a-button 
+                    v-if="detectFunctionType(message.content) === 'question'" 
+                    type="primary" 
+                    size="small" 
+                    @click="$emit('navigate', '2_0')"
+                  >
+                    <template #icon><icon-question-circle /></template>
+                    前往题目生成页面
+                  </a-button>
+                  
+                  <a-button 
+                    v-if="detectFunctionType(message.content) === 'video'" 
+                    type="primary" 
+                    size="small" 
+                    @click="$emit('navigate', '4_0')"
+                  >
+                    <template #icon><icon-video-camera /></template>
+                    前往视频推荐页面
+                  </a-button>
+                </div>
+                </a-card>
                 <a-button 
-                  v-if="detectFunctionType(message.content) === 'question'" 
-                  type="primary" 
-                  size="small" 
-                  @click="$emit('navigate', '2_0')"
+                  type="text" 
+                  class="copy-button"
+                  @click="copyChatContent(message)"
+                  title="复制"
                 >
-                  <template #icon><icon-question-circle /></template>
-                  前往题目生成页面
-                </a-button>
-                
-                <a-button 
-                  v-if="detectFunctionType(message.content) === 'video'" 
-                  type="primary" 
-                  size="small" 
-                  @click="$emit('navigate', '4_0')"
-                >
-                  <template #icon><icon-video-camera /></template>
-                  前往视频推荐页面
+                  <template #icon>
+                      <icon-copy />
+                  </template>
                 </a-button>
               </div>
-            </a-card>
           </div>
           
           <div v-if="loading" class="message-item assistant">
@@ -153,7 +165,8 @@ import {
   IconVideoCamera,
   IconBulb,
   IconPen,
-  IconPalette
+  IconPalette,
+  IconCopy
 } from '@arco-design/web-vue/es/icon';
 
 // 引入路由
@@ -396,6 +409,20 @@ const scrollToBottom = (): void => {
   }
 };
 
+// 复制功能
+const copyChatContent = async (message: Message) => {
+    try {
+        const roleName = message.role === 'user' ? '用户' : 'AI助手';
+        const content = `${roleName}:\n${message.content}`;
+        
+        await navigator.clipboard.writeText(content);
+        Message.success('消息已复制到剪贴板');
+    } catch (error) {
+        console.error('复制失败:', error);
+        Message.error('复制失败，请重试');
+    }
+};
+
 // 组件挂载时滚动到底部
 onMounted(() => {
   scrollToBottom();
@@ -437,6 +464,16 @@ onMounted(() => {
   flex-direction: row-reverse;
 }
 
+.message-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+
+.message-item.user .message-content-wrapper {
+  align-items: flex-end;
+}
+
 .message-card {
   max-width: 80%;
   border-radius: 8px;
@@ -450,6 +487,27 @@ onMounted(() => {
 
 .message-card.assistant {
   background-color: var(--color-bg-2);
+}
+
+/* 复制按钮样式 */
+.copy-button {
+  margin-top: 4px;
+  margin-right: 12px;
+  padding: 4px 8px;
+  font-size: 12px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.copy-button:hover {
+  opacity: 1;
+}
+
+/* 用户消息的复制按钮位置调整 */
+.message-item.user .copy-button {
+  margin-right: 0;
+  margin-left: 12px;
+  align-self: flex-end;
 }
 
 /* 添加功能按钮样式 */
